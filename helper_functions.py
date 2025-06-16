@@ -80,6 +80,9 @@ def clean_text(text):
     text = ' '.join(word for word in text.split() if word not in stop_words)
     # Remove extra spaces
     text = ' '.join(text.split())
+
+    # Remove leading and trailing spaces
+    text = text.strip()
     # Return the cleaned text
 
     return text
