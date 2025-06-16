@@ -21,4 +21,12 @@ for index, row in tqdm(combined_data.iterrows()):
 
 clean_data = pd.DataFrame(clean_rows, columns=['title', 'text', 'label'])
 save_to_csv(clean_data, 'cleaned_combined_data.csv')
+
+# In the Analysis.py file, we noticed that there were some rows with empty text or text that was just a link.
+# We will remove those rows from the cleaned data, as they were just fake data and we believe this to be an artifact of the data collection process.
+clean_data = clean_data[~clean_data['text'].isnull() & (clean_data['text'] != '')]
+clean_data = clean_data[~clean_data['text'].str.contains('httpswww', na=False)]
+save_to_csv(clean_data, 'final_cleaned_combined_data.csv')
+# Final cleaned data is saved to 'final_cleaned_combined_data.csv'
+
 print("Data preprocessing and saving completed successfully.")
