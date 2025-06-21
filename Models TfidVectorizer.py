@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report, confusion_matrix
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sentence_transformers import SentenceTransformer
+import os
 
 def load_data(file_path):
     """
@@ -30,25 +30,28 @@ def plot_length_distribution(data):
     plt.ylabel('Frequency')
     plt.show()
     # Save the plot
-    plt.savefig('text_length_distribution.png')
+    plt.savefig('text_length_distribution_from_Tfidf.png')
+    print('Length distribution plot saved')
 
 plot_length_distribution(data)
 
-# Define the SentenceTransformer model
-# We use this one, since it is the one that was used in the Kaggle code, and Hugging Face is european based.
-model = SentenceTransformer('mixedbread-ai/mxbai-embed-large-v1')
+file_path = 'encoded_text_Tfidf.csv'
+retrain = False  # Set to True if you want to retrain the model and re-encode the data
 
-# Encode the text data using the SentenceTransformer model
-def encode_texts(texts):
-    """
-    Encode texts using the SentenceTransformer model.
-    """
-    return model.encode(texts, show_progress_bar=True, convert_to_tensor=True)
-
-encoded_texts = encode_texts(data['text'].tolist())
-# Convert the encoded texts to a DataFrame
-encoded_df = pd.DataFrame(encoded_texts.numpy(), columns=[f'feature_{i}' for i in range(encoded_texts.shape[1])])
-# Add the label column to the encoded DataFrame
-encoded_df['label'] = data['label'].values
-# Save the encoded DataFrame to a CSV file
-encoded_df.to_csv('encoded_texts.csv', index=False)
+if os.path.exists(file_path) and not retrain:
+    encoded_data = pd.read_csv(file_path)
+else:
+    # Initialize the TF-IDF Vectorizer
+    vectorizer = TfidfVectorizer(max_features=5000)
+    
+    # Fit and transform the text data
+    X = vectorizer.fit_transform(data['text']).toarray()
+    
+    # Create a DataFrame with the encoded features
+    encoded_data = pd.DataFrame(X, columns=vectorizer.get_feature_names_out())
+    
+    # Add the label column
+    encoded_data['label'] = data['label'].values
+    
+    # Save the encoded data to a CSV file
+    encoded_data.to_csv(file_path, index=False)
