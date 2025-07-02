@@ -46,7 +46,7 @@ def main() -> None:
     else:
         # Define the SentenceTransformer model
         # We use this one, since it is the one that was used in the Kaggle code, and Hugging Face is european based.
-        model = SentenceTransformer('mixedbread-ai/mxbai-embed-large-v1')
+        model = SentenceTransformer('mixedbread-ai/mxbai-embed-xsmall-v1')
 
         import torch
         if torch.cuda.is_available():
