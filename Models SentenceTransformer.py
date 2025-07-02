@@ -48,19 +48,25 @@ def main() -> None:
         # We use this one, since it is the one that was used in the Kaggle code, and Hugging Face is european based.
         model = SentenceTransformer('mixedbread-ai/mxbai-embed-large-v1')
 
-        pool = model.start_multi_process_pool(['cpu', 'cpu'])
+        import torch
+        if torch.cuda.is_available():
+            # Use GPU multiprocessing - specify number of GPUs or let it auto-detect
+            pool = model.start_multi_process_pool()  # Auto-detects available GPUs
+        else:
+            # Use CPU multiprocessing with proper number of processes
+            import multiprocessing
+            num_processes = min(4, multiprocessing.cpu_count())  # Use 4 or fewer processes
+            pool = model.start_multi_process_pool(['cpu'] * num_processes)
 
         texts = data['text'].tolist()
 
-        emb = model.encode(texts, show_progress_bar=True, pool=pool, chunk_size=50)
+        emb = model.encode(texts, show_progress_bar=True, pool=pool, batch_size=32, convert_to_numpy=True)
         assert emb.shape[0] == len(texts), "Embedding size does not match number of texts"
-
-        emb_normal = model.encode(texts)
 
         model.stop_multi_process_pool(pool)
 
         # Convert the encoded texts to a DataFrame
-        encoded_df = pd.DataFrame(emb_normal.numpy(), columns=[f'feature_{i}' for i in range(emb_normal.shape[1])])
+        encoded_df = pd.DataFrame(emb, columns=[f'feature_{i}' for i in range(emb.shape[1])])
         # Add the label column to the encoded DataFrame
         encoded_df['label'] = data['label'].values
         # Save the encoded DataFrame to a CSV file
