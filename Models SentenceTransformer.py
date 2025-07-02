@@ -48,7 +48,7 @@ def main() -> None:
         # We use this one, since it is the one that was used in the Kaggle code, and Hugging Face is european based.
         model = SentenceTransformer('mixedbread-ai/mxbai-embed-large-v1')
 
-        pool = model.start_multiprocess_pool(['cpu', 'cpu'])
+        pool = model.start_multi_process_pool(['cpu', 'cpu'])
 
         texts = data['text'].tolist()
 
@@ -57,7 +57,7 @@ def main() -> None:
 
         emb_normal = model.encode(texts)
 
-        model.stop_multiprocess_pool(pool)
+        model.stop_multi_process_pool(pool)
 
         # Convert the encoded texts to a DataFrame
         encoded_df = pd.DataFrame(emb_normal.numpy(), columns=[f'feature_{i}' for i in range(emb_normal.shape[1])])
