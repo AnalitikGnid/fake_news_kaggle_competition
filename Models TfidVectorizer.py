@@ -33,13 +33,19 @@ def plot_length_distribution(data):
     plt.savefig('text_length_distribution_from_Tfidf.png')
     print('Length distribution plot saved')
 
-plot_length_distribution(data)
+#plot_length_distribution(data)
 
 file_path = 'encoded_text_Tfidf.csv'
 retrain = False  # Set to True if you want to retrain the model and re-encode the data
 
 if os.path.exists(file_path) and not retrain:
     encoded_data = pd.read_csv(file_path)
+    # Check if the label_to_predict column exists
+    if 'label_to_predict' not in encoded_data.columns:
+        raise ValueError("The target column is missing in the encoded data.")
+    else:
+        print(f"Encoded data loaded from {file_path}")
+        print(encoded_data.shape)
 else:
     # Initialize the TF-IDF Vectorizer
     vectorizer = TfidfVectorizer(max_features=5000)
@@ -51,7 +57,7 @@ else:
     encoded_data = pd.DataFrame(X, columns=vectorizer.get_feature_names_out())
     
     # Add the label column
-    encoded_data['label'] = data['label'].values
+    encoded_data['label_to_predict'] = data['label'].values
     
     # Save the encoded data to a CSV file
     encoded_data.to_csv(file_path, index=False)
