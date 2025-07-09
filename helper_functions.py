@@ -5,6 +5,7 @@ nltk.download('stopwords')
 # Import stopwords
 from nltk.corpus import stopwords
 from sklearn.metrics import roc_curve, auc, confusion_matrix
+import matplotlib.pyplot as plt
 
 def load_data(file_path):
     """
