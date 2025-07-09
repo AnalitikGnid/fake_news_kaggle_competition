@@ -112,7 +112,7 @@ def save_to_csv(df, file_path):
     """
     df.to_csv(file_path, index=False)
 
-def evaluate_classifier(y_true, y_score, threshold=0.5, sample_weight=None, plot=True):
+def evaluate_classifier(y_true, y_score, threshold=0.5, sample_weight=None, plot=True, model_name = "Classifier"):
     """
     Calculate ROC curve, AUC, and confusion matrix for a classifier, and optionally plot them.
     """
@@ -132,6 +132,7 @@ def evaluate_classifier(y_true, y_score, threshold=0.5, sample_weight=None, plot
         plt.legend(loc='lower right')
         plt.grid(True, linestyle='--', alpha=0.3)
         plt.show()
+        plt.savefig(f'{model_name}_roc_curve.png')
 
         # Plot confusion matrix
         plt.figure(figsize=(4, 4))
@@ -148,10 +149,11 @@ def evaluate_classifier(y_true, y_score, threshold=0.5, sample_weight=None, plot
                 plt.text(j, i, int(cm[i, j]), ha='center', va='center', color='black')
         plt.tight_layout()
         plt.show()
+        plt.savefig(f'{model_name}_confusion_matrix.png')
 
     return fpr, tpr, thresholds, auc_score, cm
 
-def plot_efficiencies(model_outputs, true_labels):
+def plot_efficiencies(model_outputs, true_labels, model_name="Classifier"):
     """
     Plot the efficiencies of different classifiers.
     
@@ -161,20 +163,26 @@ def plot_efficiencies(model_outputs, true_labels):
     thresholds = np.linspace(0, 1, 100)
     signal_efficiencies = []
     background_efficiencies = []
+    accuracies_per_threshold = []
     for threshold in thresholds:
         signal_efficiency = np.mean(model_outputs[true_labels == 1] >= threshold)
         background_efficiency = np.mean(model_outputs[true_labels == 0] >= threshold)
 
         signal_efficiencies.append(signal_efficiency)
         background_efficiencies.append(background_efficiency)
+
+        accuracy_per_threshold = np.mean((model_outputs >= threshold) == true_labels)
+        accuracies_per_threshold.append(accuracy_per_threshold)
     plt.figure(figsize=(10, 6))
     plt.plot(thresholds, signal_efficiencies, label='Signal Efficiency', color='blue')
     plt.plot(thresholds, background_efficiencies, label='Background Efficiency', color='red')
+    plt.plot(thresholds, accuracies_per_threshold, label='Accuracy', color='green', linestyle='--')
     plt.xlabel('Threshold')
-    plt.ylabel('Efficiency')
+    plt.ylabel('Efficiency/Accuracy')
     plt.title('Signal and Background Efficiencies')
     plt.legend()
     plt.grid(True)
     plt.show()
+    plt.savefig(f'{model_name}_efficiencies.png')
     
         

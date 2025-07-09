@@ -48,7 +48,7 @@ if os.path.exists(file_path) and not retrain:
         print(encoded_data.shape)
 else:
     # Initialize the TF-IDF Vectorizer
-    vectorizer = TfidfVectorizer(max_features=5000)
+    vectorizer = TfidfVectorizer(max_features=250)
     
     # Fit and transform the text data
     X = vectorizer.fit_transform(data['text']).toarray()
