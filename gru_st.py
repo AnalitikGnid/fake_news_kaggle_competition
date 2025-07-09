@@ -12,6 +12,8 @@ from tensorflow.keras.utils import to_categorical
 
 from pathlib import Path
 
+recreate_accuracies = False  # Set to True to recreate accuracies.csv
+
 data = pd.read_csv('ST.csv')
 embeddings = data.iloc[:, :-1].values
 print('data shape ', data.shape)
@@ -26,7 +28,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 
 accuracies_path = 'accuracies.csv'
 
-if Path(accuracies_path).exists():
+if Path(accuracies_path).exists() and not recreate_accuracies:
     accuracies_df = pd.read_csv(accuracies_path)
     print("Loaded existing accuracies from", accuracies_path)
 else:

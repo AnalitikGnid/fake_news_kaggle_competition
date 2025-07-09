@@ -11,6 +11,9 @@ import seaborn as sns
 
 from pathlib import Path
 
+recreate_accuracies = False  # Set to True to recreate accuracies.csv
+
+
 # Load data
 df = pd.read_csv('encoded_text_Tfidf.csv')
 print(df.shape)
@@ -30,7 +33,7 @@ print('Data split complete')
 
 accuracies_path = 'accuracies.csv'
 
-if Path(accuracies_path).exists():
+if Path(accuracies_path).exists() and not recreate_accuracies:
     accuracies_df = pd.read_csv(accuracies_path)
     print("Loaded existing accuracies from", accuracies_path)
 else:
