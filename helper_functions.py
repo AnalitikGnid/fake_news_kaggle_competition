@@ -4,6 +4,7 @@ import nltk
 nltk.download('stopwords')
 # Import stopwords
 from nltk.corpus import stopwords
+from sklearn.metrics import roc_curve, auc, confusion_matrix
 
 def load_data(file_path):
     """
@@ -110,3 +111,70 @@ def save_to_csv(df, file_path):
     file_path (str): The path where the CSV file will be saved.
     """
     df.to_csv(file_path, index=False)
+
+def evaluate_classifier(y_true, y_score, threshold=0.5, sample_weight=None, plot=True):
+    """
+    Calculate ROC curve, AUC, and confusion matrix for a classifier, and optionally plot them.
+    """
+    fpr, tpr, thresholds = roc_curve(y_true, y_score, sample_weight=sample_weight)
+    auc_score = auc(fpr, tpr)
+    y_pred = (y_score >= threshold).astype(int)
+    cm = confusion_matrix(y_true, y_pred, sample_weight=sample_weight)
+
+    if plot:
+        # Plot ROC curve
+        plt.figure(figsize=(7, 5))
+        plt.plot(fpr, tpr, label=f'ROC curve (AUC = {auc_score:.3f})')
+        plt.plot([0, 1], [0, 1], 'k--', label='Random guess')
+        plt.xlabel('False Positive Rate')
+        plt.ylabel('True Positive Rate')
+        plt.title('Receiver Operating Characteristic (ROC)')
+        plt.legend(loc='lower right')
+        plt.grid(True, linestyle='--', alpha=0.3)
+        plt.show()
+
+        # Plot confusion matrix
+        plt.figure(figsize=(4, 4))
+        plt.imshow(cm, interpolation='nearest', cmap=plt.cm.Blues)
+        plt.title('Confusion Matrix')
+        plt.colorbar()
+        tick_marks = np.arange(2)
+        plt.xticks(tick_marks, ['Background', 'Signal'])
+        plt.yticks(tick_marks, ['Background', 'Signal'])
+        plt.ylabel('True label')
+        plt.xlabel('Predicted label')
+        for i in range(2):
+            for j in range(2):
+                plt.text(j, i, int(cm[i, j]), ha='center', va='center', color='black')
+        plt.tight_layout()
+        plt.show()
+
+    return fpr, tpr, thresholds, auc_score, cm
+
+def plot_efficiencies(model_outputs, true_labels):
+    """
+    Plot the efficiencies of different classifiers.
+    
+    Parameters:
+    efficiencies (dict): A dictionary where keys are classifier names and values are efficiency values.
+    """
+    thresholds = np.linspace(0, 1, 100)
+    signal_efficiencies = []
+    background_efficiencies = []
+    for threshold in thresholds:
+        signal_efficiency = np.mean(model_outputs[true_labels == 1] >= threshold)
+        background_efficiency = np.mean(model_outputs[true_labels == 0] >= threshold)
+
+        signal_efficiencies.append(signal_efficiency)
+        background_efficiencies.append(background_efficiency)
+    plt.figure(figsize=(10, 6))
+    plt.plot(thresholds, signal_efficiencies, label='Signal Efficiency', color='blue')
+    plt.plot(thresholds, background_efficiencies, label='Background Efficiency', color='red')
+    plt.xlabel('Threshold')
+    plt.ylabel('Efficiency')
+    plt.title('Signal and Background Efficiencies')
+    plt.legend()
+    plt.grid(True)
+    plt.show()
+    
+        
