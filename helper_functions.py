@@ -1,7 +1,8 @@
 import pandas as pd
+import numpy as np
 # Download stopwords if not already downloaded
 import nltk
-nltk.download('stopwords')
+#nltk.download('stopwords')
 # Import stopwords
 from nltk.corpus import stopwords
 from sklearn.metrics import roc_curve, auc, confusion_matrix
