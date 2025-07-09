@@ -142,8 +142,8 @@ def evaluate_classifier(y_true, y_score, threshold=0.5, sample_weight=None, plot
         plt.title('Confusion Matrix')
         plt.colorbar()
         tick_marks = np.arange(2)
-        plt.xticks(tick_marks, ['Background', 'Signal'])
-        plt.yticks(tick_marks, ['Background', 'Signal'])
+        plt.xticks(tick_marks, ['Fake News', 'True News'])
+        plt.yticks(tick_marks, ['Fake News', 'True News'])
         plt.ylabel('True label')
         plt.xlabel('Predicted label')
         for i in range(2):
