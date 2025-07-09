@@ -2,7 +2,7 @@
 #SBATCH --job-name=python_job
 #SBATCH --output=output_lv.txt
 #SBATCH --error=error_lv.txt
-#SBATCH --time=01:00:00
+#SBATCH --time=01:59:00
 #SBATCH --partition=short
 #SBATCH --ntasks=1
 #SBATCH --mem=16G

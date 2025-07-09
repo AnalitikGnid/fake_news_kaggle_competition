@@ -14,11 +14,11 @@ df = pd.read_csv('encoded_text_Tfidf.csv')
 print(df.shape)
 X = df.iloc[:, :-1].values
 print(X.shape)
-labels = df['label'].values
+labels = df['label_to_predict'].values
 y = to_categorical(labels)  # One-hot encode labels
 
 # Reshape TF-IDF output to simulate sequence for LSTM
-X_reshaped = X.reshape(X.shape[0], 10, 10)
+X_reshaped = X.reshape(X.shape[0], 100, 50)
 
 # Split data
 X_train, X_test, y_train, y_test = train_test_split(X_reshaped, y, test_size=0.2, random_state=42)
