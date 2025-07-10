@@ -115,7 +115,7 @@ plot_efficiencies(y_pred_probs.flatten(), y_test, model_name="LSTM_ST")
 
 # Add the best model's accuracy to the DataFrame
 #accuracies_df = accuracies_df.concat(pd.DataFrame({'model': [f'best_model_{best_idx+1}_lstm_st'], 'accuracy': [np.mean(y_pred == y_test)]}), ignore_index=True)
-ccuracies_df = pd.concat([accuracies_df,pd.DataFrame({'model': [f'best_model_{best_idx+1}_lstm_st'],'accuracy': [np.mean(y_pred == y_test)]})], ignore_index=True)
+accuracies_df = pd.concat([accuracies_df,pd.DataFrame({'model': [f'best_model_{best_idx+1}_lstm_st'],'accuracy': [np.mean(y_pred == y_test)]})], ignore_index=True)
 # Save accuracies DataFrame to CSV
 accuracies_df.to_csv(accuracies_path, index=False)
 
