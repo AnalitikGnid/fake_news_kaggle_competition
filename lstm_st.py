@@ -24,7 +24,7 @@ print(f'X {X.shape}, y {y.shape}')
 # Train/test split
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-accuracies_path = 'accuracies.csv'
+accuracies_path = 'accuracies_lstm_st.csv'
 
 if Path(accuracies_path).exists() and not recreate_accuracies:
     accuracies_df = pd.read_csv(accuracies_path)
@@ -85,7 +85,8 @@ for idx, (units, dropout, hidden) in enumerate(model_configs):
         fold_accuracies.append(val_acc)
         model.save(output_dir / f'model_{idx+1}_fold_{len(fold_accuracies)}_lstm_st.h5')
         # Save fold accuracy to DataFrame
-        accuracies_df = accuracies_df.concat(pd.DataFrame({'model': [f'model_{idx+1}_fold_{len(fold_accuracies)}_lstm_st'], 'accuracy': [val_acc]}), ignore_index=True)
+        #accuracies_df = accuracies_df.concat(pd.DataFrame({'model': [f'model_{idx+1}_fold_{len(fold_accuracies)}_lstm_st'], 'accuracy': [val_acc]}), ignore_index=True)
+        accuracies_df = pd.concat([accuracies_df,pd.DataFrame({'model': [f'model_{idx+1}_fold_{len(fold_accuracies)}_lstm_st'],'accuracy': [val_acc]})], ignore_index=True)
     avg_acc = np.mean(fold_accuracies)
     avg_accuracies.append(avg_acc)
     print(f"Model {idx+1}: avg 3-fold accuracy = {avg_acc:.4f}")
@@ -113,8 +114,8 @@ fpr, tpr, thresholds, auc_score, cm = evaluate_classifier(y_test, y_pred_probs.f
 plot_efficiencies(y_pred_probs.flatten(), y_test, model_name="LSTM_ST")
 
 # Add the best model's accuracy to the DataFrame
-accuracies_df = accuracies_df.concat(pd.DataFrame({'model': [f'best_model_{best_idx+1}_lstm_st'], 'accuracy': [np.mean(y_pred == y_test)]}), ignore_index=True)
-
+#accuracies_df = accuracies_df.concat(pd.DataFrame({'model': [f'best_model_{best_idx+1}_lstm_st'], 'accuracy': [np.mean(y_pred == y_test)]}), ignore_index=True)
+ccuracies_df = pd.concat([accuracies_df,pd.DataFrame({'model': [f'best_model_{best_idx+1}_lstm_st'],'accuracy': [np.mean(y_pred == y_test)]})], ignore_index=True)
 # Save accuracies DataFrame to CSV
 accuracies_df.to_csv(accuracies_path, index=False)
 

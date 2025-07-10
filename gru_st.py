@@ -26,7 +26,7 @@ print(f'X {X.shape}, y {y.shape}')
 # Train/test split
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-accuracies_path = 'accuracies.csv'
+accuracies_path = 'accuracies_gru_st.csv'
 
 if Path(accuracies_path).exists() and not recreate_accuracies:
     accuracies_df = pd.read_csv(accuracies_path)
