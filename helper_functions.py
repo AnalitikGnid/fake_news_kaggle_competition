@@ -7,6 +7,9 @@ import nltk
 from nltk.corpus import stopwords
 from sklearn.metrics import roc_curve, auc, confusion_matrix
 import matplotlib.pyplot as plt
+from sklearn.metrics import classification_report
+import seaborn as sns
+from pathlib import Path
 
 def load_data(file_path):
     """
@@ -187,4 +190,57 @@ def plot_efficiencies(model_outputs, true_labels, model_name="Classifier"):
     plt.show()
     plt.savefig(f'{model_name}_efficiencies.png')
     
+
+def train_and_evaluate(model, X_train, y_train, X_val, y_val, X_test, y_test, model_name):
+    history = model.fit(X_train, y_train, epochs=10, batch_size=32, validation_data=(X_val, y_val))
+    
+    # Save the model
+    model.save(f'best_models_final/{model_name}.h5')
+    
+    # Plot training & validation accuracy and loss
+    plt.figure(figsize=(12, 4))
+    
+    plt.subplot(1, 2, 1)
+    plt.plot(history.history['accuracy'], label='Train Accuracy')
+    plt.plot(history.history['val_accuracy'], label='Validation Accuracy')
+    plt.title(f'{model_name} Accuracy')
+    plt.xlabel('Epochs')
+    plt.ylabel('Accuracy')
+    plt.legend()
+    
+    plt.subplot(1, 2, 2)
+    plt.plot(history.history['loss'], label='Train Loss')
+    plt.plot(history.history['val_loss'], label='Validation Loss')
+    plt.title(f'{model_name} Loss')
+    plt.xlabel('Epochs')
+    plt.ylabel('Loss')
+    plt.legend()
+    
+    plt.tight_layout()
+    plt.savefig(f'best_models_plots/{model_name}_training_plot.png')
+    plt.show()
+
+    # Get prediction probabilities on test set
+    y_pred_prob = model.predict(X_test)
+    # Create histogram of prediction probabilities vs actual labels
+    plt.figure(figsize=(8, 6))
+    sns.histplot(data=pd.DataFrame({'Probability': y_pred_prob.flatten(), 'Actual': y_test}), 
+                 x='Probability', hue='Actual', multiple='stack', bins=30)
+    plt.title(f'{model_name} Prediction Probability Histogram')
+    plt.xlabel('Prediction Probability')
+    plt.ylabel('Count')
+    plt.savefig(f'best_models_plots/{model_name}_probability_histogram.png')
+    plt.show()
+    # Print classification report and confusion matrix
+    y_pred = (y_pred_prob > 0.5).astype(int).flatten()
+    print(classification_report(y_test, y_pred))
+    cm = confusion_matrix(y_test, y_pred)
+    plt.figure(figsize=(5, 4))
+    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=["Fake", "Real"], yticklabels=["Fake", "Real"])
+    plt.xlabel("Predicted")
+    plt.ylabel("True")
+    plt.title(f'{model_name} Confusion Matrix')
+    plt.tight_layout()
+    plt.savefig(f'best_models_plots/{model_name}_confusion_matrix.png')
+    plt.show()
         
