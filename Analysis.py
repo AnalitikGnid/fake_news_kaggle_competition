@@ -2,6 +2,7 @@ import pandas as pd
 
 clean_data = pd.read_csv('cleaned_combined_data.csv')
 
+
 # I want to print all the rows where the text is empty
 empty_rows = clean_data[clean_data['text'].isnull() == True]
 
@@ -26,3 +27,9 @@ print(link_rows.head(10))  # Display the first 10 rows with links
 label_counts_all = clean_data['label'].value_counts()
 print("\nLabel counts for the entire dataset:")
 print(label_counts_all)
+
+# Get the label counts after removing the empty and link rows
+final_cleaned_data = pd.read_csv('final_cleaned_combined_data.csv')
+final_label_counts = final_cleaned_data['label'].value_counts()
+print("\nLabel counts after cleaning:")
+print(final_label_counts)
