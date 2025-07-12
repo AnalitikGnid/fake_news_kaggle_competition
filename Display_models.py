@@ -17,7 +17,7 @@ def visualize_model(model, model_name):
     Visualize the model architecture.
     """
     from tensorflow.keras.utils import plot_model
-    plot_model(model, to_file=output_dir / f'{model_name}_architecture.png', show_shapes=True, show_layer_names=True)
+    plot_model(model, to_file=output_dir / f'{model_name}_architecture.png', show_shapes=True, show_layer_names=True, rankdir='TB', dpi=96)
     print(f'Model architecture saved as {model_name}_architecture.png')
 visualize_model(lstm_tv, 'LSTM_TV')
 visualize_model(lstm_st, 'LSTM_ST')
